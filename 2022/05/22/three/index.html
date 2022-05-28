@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Spark HA &amp; Yarn配置 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="*七、Spark-Standalone-HA模式* 注：此处因为先前配置时的zookeeper版本和spark版本不太兼容，导致此模式有故障，需要重新下载配置新的版本的zookeeper。配置之前需要删除三台主机的旧版zookeeper以及对应的软连接。  在node1节点上重新进行前面配置的zookerper操作  \1. 上传apache-zookeeper-3.7.0-bin.tar.gz到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark HA &amp; Yarn配置">
+<meta property="og:url" content="http://example.com/2022/05/22/three/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="*七、Spark-Standalone-HA模式* 注：此处因为先前配置时的zookeeper版本和spark版本不太兼容，导致此模式有故障，需要重新下载配置新的版本的zookeeper。配置之前需要删除三台主机的旧版zookeeper以及对应的软连接。  在node1节点上重新进行前面配置的zookerper操作  \1. 上传apache-zookeeper-3.7.0-bin.tar.gz到">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/three/1.png">
+<meta property="og:image" content="http://example.com/three/2.png">
+<meta property="og:image" content="http://example.com/three/3.png">
+<meta property="og:image" content="http://example.com/three/4.png">
+<meta property="og:image" content="http://example.com/three/5.png">
+<meta property="og:image" content="http://example.com/three/6.png">
+<meta property="og:image" content="http://example.com/three/%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%B5%8B%E8%AF%951.png">
+<meta property="og:image" content="http://example.com/three/%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%B5%8B%E8%AF%952.png">
+<meta property="og:image" content="http://example.com/three/%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%B5%8B%E8%AF%953.png">
+<meta property="og:image" content="http://example.com/three/client%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95pi-1.png">
+<meta property="og:image" content="http://example.com/three/client%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95pi-2.png">
+<meta property="og:image" content="http://example.com/three/client%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95pi-3.png">
+<meta property="og:image" content="http://example.com/three/cluster%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95-1.png">
+<meta property="og:image" content="http://example.com/three/cluster%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95-2.png">
+<meta property="og:image" content="http://example.com/three/cluster%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95-3.png">
+<meta property="article:published_time" content="2022-05-22T03:11:00.000Z">
+<meta property="article:modified_time" content="2022-05-22T12:55:30.693Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/three/1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-three" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/05/22/three/" class="article-date">
+  <time class="dt-published" datetime="2022-05-22T03:11:00.000Z" itemprop="datePublished">2022-05-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Spark HA &amp; Yarn配置
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><em><strong>*七、Spark-Standalone-HA模式*</strong></em></p>
+<p>注：此处因为先前配置时的zookeeper版本和spark版本不太兼容，导致此模式有故障，需要重新下载配置新的版本的zookeeper。配置之前需要删除三台主机的旧版zookeeper以及对应的软连接。 </p>
+<p>在node1节点上重新进行前面配置的zookerper操作 </p>
+<p>\1. 上传apache-zookeeper-3.7.0-bin.tar.gz到&#x2F;export&#x2F;server&#x2F;目录下并解压文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /export/server/</span><br><span class="line"></span><br><span class="line">tar -zxvf apache-zookeeper-3.7.0-bin.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>\2. 在&#x2F;export&#x2F;server&#x2F;目录下创建软连接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /export/server/</span><br><span class="line"></span><br><span class="line">ln -s apache-zookeeper-3.7.0-bin spark</span><br></pre></td></tr></table></figure>
+
+<p>\3. 进入&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;conf&#x2F;将zoo_sample.cfg文件复制为新文件 zoo.cfg</p>
+<p>\4. 接上步给zoo.cfg 添加内容 </p>
+<p>\5. 进入&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas 目录在此目录下创建 myid 文件，将1写入进去</p>
+<p>\6. 将node1节点中 &#x2F;export&#x2F;server&#x2F;zookeeper-3.7.0 路径下内容分发给node2和node3</p>
+<p>\7. 分发完后，分别在node2和node3上创建软连接</p>
+<p>\8. 将node2和node3的&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas&#x2F;文件夹 </p>
+<p>下的myid中的内容分别改为2和3</p>
+<p>配置环境变量： </p>
+<p>因先前配置 zookeeper 时候创建过软连接且以 ’zookeeper‘ 为路径，所以不用配置环境变量，此处也是创建软连接的方便之处. </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /export/server/spark/conf </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim spark-env.sh</span><br></pre></td></tr></table></figure>
+
+<p>删除: SPARK_MASTER_HOST&#x3D;node1</p>
+<p>在文末添加内容 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SPARK_DAEMON_JAVA_OPTS=&quot;-Dspark.deploy.recoveryMode=ZOOKEEPER - </span><br><span class="line"></span><br><span class="line">Dspark.deploy.zookeeper.url=master:2181,slave1:2181,slave2:2181 - </span><br><span class="line"></span><br><span class="line">Dspark.deploy.zookeeper.dir=/spark-ha&quot; </span><br><span class="line"></span><br><span class="line">\# spark.deploy.recoveryMode 指定HA模式 基于Zookeeper实现 </span><br><span class="line"></span><br><span class="line">\# 指定Zookeeper的连接地址 </span><br><span class="line"></span><br><span class="line">\# 指定在Zookeeper中注册临时节点的路径 </span><br></pre></td></tr></table></figure>
+
+<p>\9. 分发spark-env.sh到node2和node3上 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scp spark-env.sh node2:/export/server/spark/conf/ </span><br><span class="line"></span><br><span class="line">scp spark-env.sh node3:/export/server/spark/conf/ </span><br></pre></td></tr></table></figure>
+
+<p>\10. 启动之前确保 Zookeeper 和 HDFS 均已经启动 </p>
+<p>启动集群: </p>
+<p># 在node1上 启动一个master 和全部worker</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sbin/start-all.sh</span><br></pre></td></tr></table></figure>
+
+<p># 注意, 下面命令在node2上执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sbin/start-master.sh</span><br></pre></td></tr></table></figure>
+
+<p># 在node2上启动一个备用的master进程</p>
+<p>#将node1的master kill掉，查看node2的WebUI界面</p>
+<p><img src="/./three/1.png" alt="img"> </p>
+<p><em><strong>*八、Spark-yarn模式*</strong></em></p>
+<p>1、启动yarn的历史服务器，jps看进程</p>
+<p><img src="/./three/2.png" alt="img"> </p>
+<p>2、在yarn上启动pyspark</p>
+<p><img src="/./three/3.png" alt="img"> </p>
+<p>3、命令测试</p>
+<p><img src="/./three/4.png" alt="img"> </p>
+<p><img src="/./three/5.png" alt="img"> </p>
+<p><img src="/./three/6.png" alt="img"> </p>
+<p>4、提交任务测试</p>
+<p><img src="/./three/%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%B5%8B%E8%AF%951.png" alt="img"> </p>
+<p><img src="/./three/%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%B5%8B%E8%AF%952.png" alt="img"> </p>
+<p><img src="/./three/%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1%E6%B5%8B%E8%AF%953.png" alt="img"> </p>
+<p>5、client模式测试pi</p>
+<p><img src="/./three/client%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95pi-1.png" alt="img"> </p>
+<p><img src="/./three/client%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95pi-2.png" alt="img"> </p>
+<p><img src="/./three/client%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95pi-3.png" alt="img"> </p>
+<p>6、cluster模式测试pi</p>
+<p><img src="/./three/cluster%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95-1.png" alt="img"> </p>
+<p><img src="/./three/cluster%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95-2.png" alt="img"><br><img src="/./three/cluster%E6%A8%A1%E5%BC%8F%E6%B5%8B%E8%AF%95-3.png" alt="img"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/05/22/three/" data-id="cl3h841vw0001s8q7alyvc1xp" data-title="Spark HA &amp; Yarn配置" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/05/22/one/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spark基础配置
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/05/22/two/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Spark local&amp; stand-alone配置</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/05/22/one/">Spark基础配置</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/22/three/">Spark HA &amp; Yarn配置</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/22/two/">Spark local&amp; stand-alone配置</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
