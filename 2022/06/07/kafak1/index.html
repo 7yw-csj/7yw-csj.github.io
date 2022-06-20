@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Kafka环境配置》 | Hexo</title>
+    
+    
+        <meta name="keywords" content="《Kafka环境配置》" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="《Kafka环境配置》 title: 《Kafka环境配置》date: 2022-6-7 21:20:41description: Spark (HA) Spark (Yarn)  阅读全文  **kafka 安装配置Kafka是一种高吞吐量的分布式发布订阅消息系统，其在大数据开发应用上的目的是通过 Hadoo的并行加载机制来统一线上和离线的消息处理，也是为了通过集群来提供实时的消息。大数据开发需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Kafka环境配置》">
+<meta property="og:url" content="http://example.com/2022/06/07/kafak1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="《Kafka环境配置》 title: 《Kafka环境配置》date: 2022-6-7 21:20:41description: Spark (HA) Spark (Yarn)  阅读全文  **kafka 安装配置Kafka是一种高吞吐量的分布式发布订阅消息系统，其在大数据开发应用上的目的是通过 Hadoo的并行加载机制来统一线上和离线的消息处理，也是为了通过集群来提供实时的消息。大数据开发需">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-06-07T13:20:41.000Z">
+<meta property="article:modified_time" content="2022-06-07T13:20:41.000Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml" />
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Hexo</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/%E9%B8%A1%E8%83%B8%E4%B8%8D%E6%98%AF%E8%82%89">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/%E9%B8%A1%E8%83%B8%E4%B8%8D%E6%98%AF%E8%82%89">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-kafak1" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2022/06/07/kafak1/">
+            <time datetime="2022-06-07T13:20:41.000Z" itemprop="datePublished">2022-06-07</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/zthxxx/Wiki-site/raw/writing/source/_posts/kafak1.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/zthxxx/Wiki-site/edit/writing/source/_posts/kafak1.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/zthxxx/Wiki-site/commits/writing/source/_posts/kafak1.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Kafka环境配置》
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h1 id="《Kafka环境配置》"><a href="#《Kafka环境配置》" class="headerlink" title="《Kafka环境配置》"></a>《Kafka环境配置》</h1><hr>
+<p>title: 《Kafka环境配置》<br>date: 2022-6-7 21:20:41<br>description: Spark (HA) Spark (Yarn)</p>
+<details>
+<summary>阅读全文</summary>
+
+<p>**<summary><br>kafka 安装配置<br>Kafka是一种高吞吐量的分布式发布订阅消息系统，其在大数据开发应用上的目的是通过 Hadoo的并行加载机制来统一线上和离线的消息处理，也是为了通过集群来提供实时的消息。大数据开发需掌握Kafka架构原理及各组件的作用和使用方法及相关功能的实现。</p>
+<p>上传文件包 到&#x2F;export&#x2F;server&#x2F;<br>解压文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>tar -zxvf kafka_2.11-2.0.0.tgz
+</code></pre>
+</blockquote>
+</blockquote>
+<p>创建软连接</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>ln -s kafka_2.11-2.0.0/ kafka
+</code></pre>
+</blockquote>
+</blockquote>
+<p>进入 &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config 修改 配置文件 server.properties</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   cd &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config vim server.properties</p>
+</blockquote>
+</blockquote>
+<p>(1)21 行内容 broker.id&#x3D;0 为依次增长的:0、1、2、3、4,集群中唯一 id 从0开始，每台不能重复<br>（注：此处不用修改）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   21 broker.id&#x3D;0</p>
+</blockquote>
+</blockquote>
+<p>(2)31 行内容 #listeners&#x3D;PLAINTEXT:&#x2F;&#x2F;:9092 取消注释，内容改为：<br>listeners&#x3D;PLAINTEXT:&#x2F;&#x2F;master:9092<br>PLAINTEXT为通信使用明文（加密ssl）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   31 listeners&#x3D;PLAINTEXT:&#x2F;&#x2F;master:9092</p>
+</blockquote>
+</blockquote>
+<p>(3)59 行内容 log.dirs&#x3D;&#x2F;tmp&#x2F;kafka-logs 为默认日志文件存储的位置，改为<br>log.dirs&#x3D;&#x2F;export&#x2F;server&#x2F;data&#x2F;kafka-logs</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   59 log.dirs&#x3D;&#x2F;export&#x2F;data&#x2F;kafka-logs</p>
+</blockquote>
+</blockquote>
+<p>(4)63 行内容为 num.partitions&#x3D;1 是默认分区数</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>63 num.partitions=1
+</code></pre>
+</blockquote>
+</blockquote>
+<p>(5)76 行部分</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>  ############################ <strong>Log Flush Policy</strong> ############################### </p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>数据安全性（持久化之前先放到缓存上，从缓存刷到磁盘上）interval.messages interval.ms</p>
+<p>(6)93 行部分</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>########################### **Log Retention Policy**############################ 
+</code></pre>
+</blockquote>
+</blockquote>
+<pre><code>数据保留策略 168/24=7，1073741824/1024=1GB，300000ms = 300s = 5min超过了删掉 （最后修改时间还是创建时间--&gt;日志段中最晚的一条消息，维护这个最大的时间戳--&gt;用户无法 干预
+</code></pre>
+<p>(7)121 行内容 zookeeper.connect&#x3D;localhost:2181 修改为zookeeper.connect&#x3D;master:2181,slave1:2181,slave2:2181</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   121 zookeeper.connect&#x3D;master:2181,slave1:2181,slave2:2181</p>
+</blockquote>
+</blockquote>
+<p>(8)126 行内容 group.initial.rebalance.delay.ms&#x3D;0 修改为group.initial.rebalance.delay.ms&#x3D;3000</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   133 group.initial.rebalance.delay.ms&#x3D;3000</p>
+</blockquote>
+</blockquote>
+<p>(9)给 slaves1和 slavs2 scp 分发 kafka<br>cd &#x2F;export&#x2F;server&#x2F; </p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   scp -r &#x2F;export&#x2F;server&#x2F;kafka_2.11-2.0.0&#x2F; slave1:$PWD<br>   scp -r &#x2F;export&#x2F;server&#x2F;kafka_2.11-2.0.0&#x2F; slave2:$PWD</p>
+</blockquote>
+</blockquote>
+<p>(10)创建软连接</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>   ln -s &#x2F;export&#x2F;server&#x2F;kafka_2.11-2.0.0&#x2F; kafka</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>(11)配置 kafka 环境变量（注：可以一台一台配，也可以在 master 完成后发给 slave1 和slave2）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   vim &#x2F;etc&#x2F;profile # kafka 环境变量 export KAFKA_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;kafka export PATH&#x3D;$PATH:$KAFKA_HOME&#x2F;bin</p>
+</blockquote>
+</blockquote>
+<p>(12)重新加载环境变量</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   source &#x2F;etc&#x2F;profile</p>
+</blockquote>
+</blockquote>
+<p>(13)分别在 slave1 和slave2 上修改配置文件 路径：&#x2F;export&#x2F;server&#x2F;kafka&#x2F;config<br>将文件 server.properties 的第 21 行的 broker.id&#x3D;0 修改为 broker.id&#x3D;1 同理 slave2 同样操<br>作</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   21 broker.id&#x3D;1</p>
+</blockquote>
+</blockquote>
+<p>(14)将文件 server.properties 的第 31 行的 listeners&#x3D;PLAINTEXT:&#x2F;&#x2F;master:9092 修改为<br>listeners&#x3D;PLAINTEXT:&#x2F;&#x2F;slave1:9092 同理slave2 同样操作</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   31 listeners&#x3D;PLAINTEXT:&#x2F;&#x2F;slave1:9092</p>
+</blockquote>
+</blockquote>
+<p>(15)启停 kafka (注：kafka 启动需要在 zookeeper 启动的情况下才可)</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   kafka-server-start.sh -daemon &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config&#x2F;server.properties</p>
+</blockquote>
+</blockquote>
+<p>   hadoop，zookeeper，kafka启动<br>   结果显示： </p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   (base) [root@master ~]# jps<br>   11793 NodeManager<br>   91699 Kafka<br>   85618 QuorumPeerMain<br>   10697 NameNode<br>   10924 DataNode<br>   11596ResourceManager<br>   109852 Jps </p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   [root@slave1 ~]# jps<br>   9301 DataNode<br>   9493 SecondaryNameNode<br>   95959 Kafka<br>   102971 Jps<br>   9855 NodeManager<br>   89534 QuorumPeerMain </p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   [root@slave2 ~]# jps<br>   88660 QuorumPeerMain<br>   95204 Kafka<br>   9110 NodeManager<br>   8616 DataNode<br>   102104 Jps</p>
+</blockquote>
+</blockquote>
+<p>   关闭 kafka<br>   kafka-server-stop.sh stop</p>
+<p>定制脚本一键启动</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   vim kafka-all.sh<br>   放入 &#x2F;bin 路径下</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   #!&#x2F;bin&#x2F;bash<br>   if [ $# -eq 0 ] ;<br>   then<br>       echo “please input param:start stop”<br>   else<br>   if [ $1 &#x3D; start ] ;then<br>       echo “${1}ing master”<br>       ssh master “source &#x2F;etc&#x2F;profile;kafka-server-start.sh -daemon &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config&#x2F;server.properties”<br>       for i in {1..2}<br>       do<br>          echo “${1}ing slave${i}”<br>          ssh slave${i} “source &#x2F;etc&#x2F;profile;kafka-server-start.sh -daemon &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config&#x2F;server.properties”<br>      done<br>   fi<br>   if [ $1 &#x3D; stop ];then<br>       echo “${1}ping master “<br>       ssh master “source &#x2F;etc&#x2F;profile;kafka-server-stop.sh”<br>      for i in {1..2}<br>      do<br>         echo “${1}ping slave${i}”<br>         ssh slave${i} “source &#x2F;etc&#x2F;profile;kafka-server-stop.sh”<br>      done<br>   fi<br>   fi<br>**</p>
+</blockquote>
+</blockquote>
+</details>
+
+<hr>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/2022/06/07/kafka2/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Kafka命令行操作》
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2022/06/07/kafka3/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《kafka API使用方法》</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+
+<!-- baidu url auto push script -->
+<script type="text/javascript">
+    !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=window.location.href,o=document.referrer;if(!e.test(r)){var n="//api.share.baidu.com/s.gif";o?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var t=new Image;t.src=n}}(window);
+</script>     
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            John Doe &copy; 2022 
+            <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/zthxxx/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>
